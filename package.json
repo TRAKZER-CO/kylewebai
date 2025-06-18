@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "echo '✅ No build step needed for KyleWebAI'"
+    "build": "npm install && echo '✅ No build step needed for KyleWebAI'"
   },
   "author": "TRAKZER-CO",
   "license": "MIT",
