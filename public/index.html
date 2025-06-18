@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kyle AI</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Kyle AI Login</h1>
+    
+    <div id="loginBox">
+      <input type="text" id="loginUser" placeholder="Username" />
+      <input type="password" id="loginPass" placeholder="Password" />
+      <button onclick="login()">Login</button>
+    </div>
+
+    <div id="chatBox" style="display:none;">
+      <h2>👾 Kyle is active</h2>
+      <div id="responseBox">Kyle: Ready to chat...</div>
+      <input type="text" id="userInput" placeholder="Type or say something..." />
+      <button onclick="sendToKyle()">Send</button>
+      <button onclick="startVoice()">🎤 Speak</button>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = '';
+
+    async function login() {
+      const username = document.getElementById('loginUser').value.trim();
+      const password = document.getElementById('loginPass').value.trim();
+
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.username;
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('chatBox').style.display = 'block';
+        showResponse('Kyle: Logged in as ' + currentUser);
+      } else {
+        alert('Login failed');
+      }
+    }
+
+    async function sendToKyle() {
+      const input = document.getElementById('userInput').value.trim();
+      if (!input) return;
+      document.getElementById('userInput').value = '';
+
+      const route = input.startsWith('learn:') ? '/learn' : '/ask';
+
+      const res = await fetch(route, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input, username: currentUser })
+      });
+      const data = await res.json();
+      showTyping(data.response);
+    }
+
+    function showResponse(text) {
+      document.getElementById('responseBox').innerHTML = "👾 Kyle: " + text;
+      speak(text.replace(/<[^>]*>/g, ''));
+    }
+
+    function showTyping(text) {
+      const box = document.getElementById('responseBox');
+      box.innerHTML = "👾 Kyle: ";
+      const clean = text.replace(/<[^>]*>/g, '');
+      let i = 0;
+      const typer = () => {
+        if (i < clean.length) {
+          box.innerHTML += clean.charAt(i);
+          i++;
+          setTimeout(typer, 20);
+        } else {
+          speak(clean);
+        }
+      };
+      typer();
+    }
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 1;
+      utter.pitch = 1;
+      utter.lang = 'en-US';
+      speechSynthesis.speak(utter);
+    }
+
+    function startVoice() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+      recognition.onresult = e => {
+        const transcript = e.results[0][0].transcript;
+        document.getElementById('userInput').value = transcript;
+        sendToKyle();
+      };
+    }
+  </script>
+</body>
+</html>
