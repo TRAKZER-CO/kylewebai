@@ -1,45 +1,108 @@
 body {
-  background: #0a0a0a;
-  color: #00ff99;
-  font-family: monospace;
   margin: 0;
-  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0a0a0a;
+  color: #00ff88;
 }
 
-#chat {
+.container {
   max-width: 600px;
   margin: 60px auto;
   padding: 20px;
-  background: #111;
+  background: #101010;
+  box-shadow: 0 0 20px #00ff88;
   border-radius: 10px;
-  box-shadow: 0 0 15px #00ff99;
 }
 
-#messages {
-  min-height: 300px;
-  margin-bottom: 20px;
+.title {
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 30px;
+  text-shadow: 0 0 8px #00ff88;
 }
 
-#messages div {
-  margin: 10px 0;
+.auth-form {
+  margin-bottom: 25px;
 }
 
-#chatForm {
-  display: flex;
-}
-
-#input {
-  flex: 1;
+.auth-form input {
+  width: 100%;
+  margin-bottom: 10px;
   padding: 10px;
-  font-size: 1em;
   border: none;
   outline: none;
+  background: #000;
+  color: #00ff88;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #00ff88;
 }
 
-button {
-  background: #00ff99;
-  color: #000;
+.auth-form button {
+  width: 100%;
+  padding: 10px;
+  background: #00ff88;
+  color: black;
   border: none;
-  padding: 10px 20px;
+  border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
+}
+
+.chat-log {
+  background: #000;
+  border: 1px solid #00ff88;
+  padding: 15px;
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  font-size: 0.95em;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+#userInput {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: #000;
+  color: #00ff88;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #00ff88;
+}
+
+.chat-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.chat-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: #00ff88;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.chat-buttons button:hover {
+  background: #00e676;
+}
+
+.response-link a {
+  color: #00ff88;
+  text-decoration: underline;
+}
+
+code {
+  background: #111;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #00ff88;
+  font-size: 0.9em;
 }

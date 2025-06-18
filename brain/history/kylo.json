@@ -1,0 +1,22 @@
+[
+  {
+    "you": "hello",
+    "kyle": "Hello, Kylo! 🔥",
+    "time": "2025-06-18T09:11:46.472Z"
+  },
+  {
+    "you": "hi",
+    "kyle": "Hey there! 👋",
+    "time": "2025-06-18T09:13:15.514Z"
+  },
+  {
+    "you": "who are you",
+    "kyle": "\n    👾 Kyle: I don't know this yet.<br>\n    Want to teach me?<br><br>\n    Type:<br>\n    <code>learn: your question | your answer</code><br><br>\n    Or <a href=\"https://www.google.com/search?q=who%20are%20you\" target=\"_blank\">🔍 Search Google</a>\n  ",
+    "time": "2025-06-18T09:13:26.488Z"
+  },
+  {
+    "you": "bruh",
+    "kyle": "\n    👾 Kyle: I don't know this yet.<br>\n    Want to teach me?<br><br>\n    Type:<br>\n    <code>learn: your question | your answer</code><br><br>\n    Or <a href=\"https://www.google.com/search?q=bruh\" target=\"_blank\">🔍 Search Google</a>\n  ",
+    "time": "2025-06-18T09:13:41.062Z"
+  }
+]

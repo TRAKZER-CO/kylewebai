@@ -6,5 +6,20 @@
   {
     "username": "zeddy",
     "password": "darkmode"
+  },
+  {
+    "username": "me",
+    "password": "nareinjr2212",
+    "role": "user"
+  },
+  {
+    "username": "mss",
+    "password": "2212",
+    "role": "user"
+  },
+  {
+    "username": "2212",
+    "password": "trakzer",
+    "role": "user"
   }
 ]

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brain Viewer</title>
+  <link rel="stylesheet" href="update.css">
+</head>
+<body>
+  <div class="box">
+    <h2>🧠 Kyle's Brain</h2>
+    <button onclick="loadBrain()">Load Brain</button>
+    <pre id="brainData"></pre>
+  </div>
+  <script>
+    function loadBrain() {
+      fetch('/brain')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('brainData').innerText = JSON.stringify(data, null, 2);
+        });
+    }
+  </script>
+</body>
+</html>
+

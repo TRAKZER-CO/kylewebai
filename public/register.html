@@ -1,0 +1,38 @@
+<!-- public/register.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <link rel="stylesheet" href="update.css">
+</head>
+<body>
+  <div class="box">
+    <h2>📝 Register</h2>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <p id="msg"></p>
+    <a href="login.html">Already have an account?</a>
+  </div>
+
+  <script>
+    function register() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('msg').textContent = data.message;
+        if (data.success) {
+          localStorage.setItem('username', username);
+          window.location.href = 'index.html';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

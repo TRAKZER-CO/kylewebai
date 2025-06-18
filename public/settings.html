@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kyle Settings</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">⚙️ Settings</h1>
+
+    <p>Change Password</p>
+    <input type="password" id="newPass" placeholder="New Password">
+    <button onclick="changePassword()">Update Password</button>
+
+    <hr style="margin: 20px 0; border-color: #00ff88">
+
+    <p>Theme (Coming soon)</p>
+    <select disabled>
+      <option selected>Luminous Green (Default)</option>
+      <option>Dark Mode</option>
+      <option>Light Mode</option>
+    </select>
+
+    <button onclick="back()">⬅️ Back to Dashboard</button>
+  </div>
+
+  <script>
+    const user = localStorage.getItem('kyleUser');
+    if (!user) window.location.href = "index.html";
+
+    async function changePassword() {
+      const password = document.getElementById('newPass').value;
+      const res = await fetch('/update-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: user, password })
+      });
+      const data = await res.json();
+      alert(data.success ? '✅ Password updated' : '❌ Error updating password');
+    }
+
+    function back() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>

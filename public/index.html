@@ -4,33 +4,165 @@
   <meta charset="UTF-8">
   <title>Kyle AI</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #39ff14;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      text-align: center;
+      padding: 30px;
+      border-radius: 10px;
+      background: rgba(0, 255, 0, 0.05);
+      box-shadow: 0 0 15px #39ff14;
+    }
+
+    .title {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 5px #39ff14;
+    }
+
+    .auth-form {
+      margin-bottom: 30px;
+      border-top: 1px solid #39ff14;
+      padding-top: 20px;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px auto;
+      background: #111;
+      color: #39ff14;
+      border: 1px solid #39ff14;
+      border-radius: 5px;
+    }
+
+    button {
+      background: #39ff14;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px 5px;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #00cc00;
+    }
+
+    #chatBox {
+      margin-top: 20px;
+    }
+
+    .chat-log {
+      text-align: left;
+      background: #111;
+      padding: 10px;
+      border: 1px solid #39ff14;
+      border-radius: 5px;
+      min-height: 100px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .chat-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chat-buttons button {
+      flex: 1;
+      min-width: 80px;
+    }
+
+    ::placeholder {
+      color: #39ff14;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 90%;
+        margin: 20px auto;
+      }
+
+      .chat-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>Kyle AI Login</h1>
-    
-    <div id="loginBox">
-      <input type="text" id="loginUser" placeholder="Username" />
-      <input type="password" id="loginPass" placeholder="Password" />
-      <button onclick="login()">Login</button>
+    <h1 class="title">👾 Kyle AI</h1>
+
+    <div id="authBox">
+      <div class="auth-form">
+        <h2>🆕 Register</h2>
+        <input type="text" id="regUser" placeholder="Username">
+        <input type="password" id="regPass" placeholder="Password">
+        <button onclick="register()">🔐 Register</button>
+      </div>
+
+      <div class="auth-form">
+        <h2>🔓 Login</h2>
+        <input type="text" id="loginUser" placeholder="Username">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button onclick="login()">➡️ Login</button>
+      </div>
     </div>
 
     <div id="chatBox" style="display:none;">
-      <h2>👾 Kyle is active</h2>
-      <div id="responseBox">Kyle: Ready to chat...</div>
-      <input type="text" id="userInput" placeholder="Type or say something..." />
-      <button onclick="sendToKyle()">Send</button>
-      <button onclick="startVoice()">🎤 Speak</button>
+      <h2>💬 Kyle is ready</h2>
+      <div id="responseBox" class="chat-log">Kyle: Ready to chat...</div>
+      <input type="text" id="userInput" placeholder="Ask Kyle something...">
+
+      <div class="chat-buttons">
+        <button onclick="sendToKyle()">🚀 Send</button>
+        <button onclick="startVoice()">🎤 Speak</button>
+        <button onclick="loadHistory()">🕘 History</button>
+      </div>
     </div>
   </div>
 
   <script>
     let currentUser = '';
 
-    async function login() {
-      const username = document.getElementById('loginUser').value.trim();
-      const password = document.getElementById('loginPass').value.trim();
+    async function register() {
+      const username = document.getElementById('regUser').value;
+      const password = document.getElementById('regPass').value;
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentUser = data.username;
+        showChatBox();
+      } else {
+        alert(data.error || '❌ Registration failed');
+      }
+    }
 
+    async function login() {
+      const username = document.getElementById('loginUser').value;
+      const password = document.getElementById('loginPass').value;
       const res = await fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -39,11 +171,9 @@
       const data = await res.json();
       if (data.success) {
         currentUser = data.username;
-        document.getElementById('loginBox').style.display = 'none';
-        document.getElementById('chatBox').style.display = 'block';
-        showResponse('Kyle: Logged in as ' + currentUser);
+        showChatBox();
       } else {
-        alert('Login failed');
+        alert('❌ Login failed');
       }
     }
 
@@ -53,7 +183,6 @@
       document.getElementById('userInput').value = '';
 
       const route = input.startsWith('learn:') ? '/learn' : '/ask';
-
       const res = await fetch(route, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,11 +190,6 @@
       });
       const data = await res.json();
       showTyping(data.response);
-    }
-
-    function showResponse(text) {
-      document.getElementById('responseBox').innerHTML = "👾 Kyle: " + text;
-      speak(text.replace(/<[^>]*>/g, ''));
     }
 
     function showTyping(text) {
@@ -78,19 +202,14 @@
           box.innerHTML += clean.charAt(i);
           i++;
           setTimeout(typer, 20);
-        } else {
-          speak(clean);
         }
       };
       typer();
     }
 
-    function speak(text) {
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.rate = 1;
-      utter.pitch = 1;
-      utter.lang = 'en-US';
-      speechSynthesis.speak(utter);
+    function showChatBox() {
+      document.getElementById('authBox').style.display = 'none';
+      document.getElementById('chatBox').style.display = 'block';
     }
 
     function startVoice() {
@@ -102,6 +221,20 @@
         document.getElementById('userInput').value = transcript;
         sendToKyle();
       };
+    }
+
+    async function loadHistory() {
+      const res = await fetch('/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUser })
+      });
+      const data = await res.json();
+      const box = document.getElementById('responseBox');
+      box.innerHTML = "🕘 Kyle Chat History:<br><br>";
+      data.history.forEach(entry => {
+        box.innerHTML += `<div><b>You:</b> ${entry.you}<br><b>Kyle:</b> ${entry.kyle}</div><hr>`;
+      });
     }
   </script>
 </body>
