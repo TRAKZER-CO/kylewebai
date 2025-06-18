@@ -1,21 +1,22 @@
 {
   "name": "kylewebai",
   "version": "1.0.0",
-  "description": "",
+  "description": "Kyle AI – A web AI chatbot with custom brain and voice input",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "TRAKZER-CO",
+  "license": "MIT",
   "dependencies": {
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
-    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "open": "^10.1.2",
-    "path": "^0.12.7",
     "say": "^0.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
