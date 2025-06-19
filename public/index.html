@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Kyle AI</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <div class="container">
@@ -12,25 +12,23 @@
     <div id="authBox">
       <div class="auth-form">
         <h2>Register</h2>
-        <input type="text" id="regUser" placeholder="Username">
-        <input type="password" id="regPass" placeholder="Password">
+        <input type="text" id="regUser" placeholder="Username" />
+        <input type="password" id="regPass" placeholder="Password" />
         <button onclick="register()">Register</button>
       </div>
-
       <div class="auth-form">
         <h2>Login</h2>
-        <input type="text" id="loginUser" placeholder="Username">
-        <input type="password" id="loginPass" placeholder="Password">
+        <input type="text" id="loginUser" placeholder="Username" />
+        <input type="password" id="loginPass" placeholder="Password" />
         <button onclick="login()">Login</button>
       </div>
     </div>
 
     <div id="chatBox" style="display:none;">
-      <h2>💬 Kyle is ready</h2>
-      <div id="responseBox" class="chat-log">Kyle: Ready to chat...</div>
-      
+      <div id="responseBox" class="chat-log"></div>
+
       <div class="input-row">
-        <input type="text" id="userInput" placeholder="Ask Kyle something...">
+        <input type="text" id="userInput" placeholder="Ask Kyle something..." />
         <button class="send-btn" onclick="sendToKyle()">Send ➤</button>
       </div>
 
@@ -39,12 +37,14 @@
         <button onclick="startVoice()">🎤 Voice</button>
         <button onclick="loadHistory()">🕘 History</button>
         <button onclick="resetChat()">♻️ Reset</button>
+        <button onclick="logout()">🚪 Logout</button>
       </div>
     </div>
   </div>
 
   <script>
     let currentUser = '';
+    let token = '';
 
     async function register() {
       const username = document.getElementById('regUser').value;
@@ -56,6 +56,7 @@
       });
       const data = await res.json();
       if (data.success) {
+        token = data.token;
         currentUser = data.username;
         showChatBox();
       } else {
@@ -73,10 +74,11 @@
       });
       const data = await res.json();
       if (data.success) {
+        token = data.token;
         currentUser = data.username;
         showChatBox();
       } else {
-        alert('❌ Login failed');
+        alert(data.error || '❌ Login failed');
       }
     }
 
@@ -84,34 +86,46 @@
       const input = document.getElementById('userInput').value.trim();
       if (!input) return;
       document.getElementById('userInput').value = '';
-
       const res = await fetch('/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ input, username: currentUser })
       });
       const data = await res.json();
-      showTyping(data.response);
+
+      appendMsg('you', input, null);
+      appendMsg('kyle', data.response, data.time, data.avatar);
     }
 
-    function showTyping(text) {
+    function appendMsg(sender, msg, time = null, avatar = null) {
       const box = document.getElementById('responseBox');
-      box.innerHTML = "👾 Kyle: ";
-      const clean = text.replace(/<[^>]*>/g, '');
-      let i = 0;
-      const typer = () => {
-        if (i < clean.length) {
-          box.innerHTML += clean.charAt(i);
-          i++;
-          setTimeout(typer, 20);
-        }
-      };
-      typer();
+      const line = document.createElement('div');
+      line.className = `msg ${sender}`;
+      line.innerHTML = `
+        <div class="avatar"><img src="${avatar || (sender === 'you' ? '/img/user.png' : '/img/kyle.png')}" /></div>
+        <div class="text">
+          <div class="bubble">${msg}</div>
+          <div class="timestamp">${time || new Date().toLocaleTimeString()}</div>
+        </div>`;
+      box.appendChild(line);
+      box.scrollTop = box.scrollHeight;
     }
 
     function showChatBox() {
       document.getElementById('authBox').style.display = 'none';
       document.getElementById('chatBox').style.display = 'block';
+    }
+
+    function resetChat() {
+      document.getElementById('responseBox').innerHTML = '';
+      document.getElementById('userInput').value = '';
+    }
+
+    function googleSearch() {
+      const query = document.getElementById('userInput').value.trim();
+      if (query) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+      }
     }
 
     function startVoice() {
@@ -128,28 +142,23 @@
     async function loadHistory() {
       const res = await fetch('/history', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ username: currentUser })
       });
       const data = await res.json();
-      const box = document.getElementById('responseBox');
-      box.innerHTML = "🕘 Kyle Chat History:<br><br>";
+      resetChat();
       data.history.forEach(entry => {
-        box.innerHTML += `<div><b>You:</b> ${entry.you}<br><b>Kyle:</b> ${entry.kyle}</div><hr>`;
+        appendMsg('you', entry.you, new Date(entry.time).toLocaleTimeString());
+        appendMsg('kyle', entry.kyle, new Date(entry.time).toLocaleTimeString());
       });
     }
 
-    function resetChat() {
-      const box = document.getElementById('responseBox');
-      box.innerHTML = "👾 Kyle: Ready to chat...";
-      document.getElementById('userInput').value = '';
-    }
-
-    function googleSearch() {
-      const query = document.getElementById('userInput').value.trim();
-      if (query) {
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-      }
+    async function logout() {
+      await fetch('/logout', { method: 'POST' });
+      window.location.reload();
     }
   </script>
 </body>

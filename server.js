@@ -20,31 +20,19 @@ let defaultBrain = {};
 
 function loadDefaultBrain() {
   defaultBrain = {};
-  console.log("📁 Checking brain file at:", brainPath);
-
-  if (!fs.existsSync(brainPath)) {
-    console.log("❌ Brain file not found.");
-    return;
-  }
+  if (!fs.existsSync(brainPath)) return;
 
   const raw = fs.readFileSync(brainPath, 'utf-8');
-  const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
 
-  console.log(`📄 Total lines read: ${lines.length}`);
-  
-  lines.forEach((line, index) => {
+  lines.forEach(line => {
     const match = line.match(/^"(.+?)"\s+"(.+?)"$/);
     if (match) {
       const q = match[1].trim().toLowerCase();
       const a = match[2].trim();
       defaultBrain[q] = a;
-      console.log(`✅ [${index}] Added brain entry: "${q}" → "${a}"`);
-    } else {
-      console.log(`⚠️ [${index}] Skipped invalid line: ${line}`);
     }
   });
-
-  console.log(`🧠 Brain size: ${Object.keys(defaultBrain).length} entries`);
 }
 
 loadDefaultBrain();
@@ -70,6 +58,11 @@ function authenticate(req, res, next) {
   } catch {
     res.status(403).json({ error: 'Forbidden' });
   }
+}
+
+function requireAdmin(req, res, next) {
+  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin access only' });
+  next();
 }
 
 app.post('/register', (req, res) => {
@@ -100,21 +93,26 @@ app.post('/login', (req, res) => {
   res.json({ success: true, token, username: user.username });
 });
 
+app.post('/logout', (req, res) => {
+  res.json({ success: true, message: 'Logged out' });
+});
+
 app.post('/ask', (req, res) => {
   const { input, username = 'guest' } = req.body;
   const clean = input.trim().toLowerCase();
 
-  let rawResponse = defaultBrain[clean];
-
-  if (!rawResponse) {
-    rawResponse = `👾 Kyle: I don't know that yet, but I'm still learning!`;
-  }
-
+  let rawResponse = defaultBrain[clean] || `👾 Kyle: I don't know that yet, but I'm still learning!`;
   const capitalizedUser = username.charAt(0).toUpperCase() + username.slice(1);
   const finalResponse = rawResponse.replace(/{{username}}/gi, capitalizedUser);
+  const timestamp = new Date().toLocaleTimeString();
 
   saveChatHistory(username, input, finalResponse);
-  res.json({ response: finalResponse });
+
+  res.json({
+    response: finalResponse,
+    time: timestamp,
+    avatar: '/img/kyle.png' // Add image in public/img/
+  });
 });
 
 app.post('/history', authenticate, (req, res) => {
@@ -122,6 +120,32 @@ app.post('/history', authenticate, (req, res) => {
   const file = path.join(userHistoryPath, `${username}.json`);
   const history = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)) : [];
   res.json({ history });
+});
+
+// 💡 ADMIN ONLY: GET/ADD/DELETE brain entries
+app.get('/admin/brain', authenticate, requireAdmin, (req, res) => {
+  res.json({ brain: defaultBrain });
+});
+
+app.post('/admin/brain', authenticate, requireAdmin, (req, res) => {
+  const { question, answer } = req.body;
+  if (!question || !answer) return res.status(400).json({ error: 'Missing fields' });
+
+  const newLine = `"${question}" "${answer}"\n`;
+  fs.appendFileSync(brainPath, newLine);
+  loadDefaultBrain();
+  res.json({ success: true });
+});
+
+app.delete('/admin/brain', authenticate, requireAdmin, (req, res) => {
+  const { question } = req.body;
+  if (!question) return res.status(400).json({ error: 'Question required' });
+
+  const raw = fs.readFileSync(brainPath, 'utf-8');
+  const lines = raw.split('\n').filter(line => !line.startsWith(`"${question}"`));
+  fs.writeFileSync(brainPath, lines.join('\n').trim());
+  loadDefaultBrain();
+  res.json({ success: true });
 });
 
 app.listen(PORT, () => console.log(`🚀 Kyle is live at http://localhost:${PORT}`));
