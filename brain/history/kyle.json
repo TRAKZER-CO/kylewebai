@@ -1,0 +1,42 @@
+[
+  {
+    "you": "hello",
+    "kyle": "Hey Kylo! Kyle here, what can I do for you?",
+    "time": "2025-06-19T11:09:55.406Z"
+  },
+  {
+    "you": "who is kyle",
+    "kyle": "Kyle is me — your AI assistant here to help!",
+    "time": "2025-06-19T11:12:38.725Z"
+  },
+  {
+    "you": "hi",
+    "kyle": "Hello {{username}}, how can I help you today?",
+    "time": "2025-06-19T11:15:34.625Z"
+  },
+  {
+    "you": "bye",
+    "kyle": "Goodbye, {{username}}. Come back soon!",
+    "time": "2025-06-19T11:17:40.137Z"
+  },
+  {
+    "you": "hi",
+    "kyle": "👾 Kyle: Hello {{username}}, how can I help you today?",
+    "time": "2025-06-19T11:17:51.713Z"
+  },
+  {
+    "you": "hi",
+    "kyle": "👾 Kyle: Hello {{username}}, how can I help you today?",
+    "time": "2025-06-19T11:20:00.601Z"
+  },
+  {
+    "you": "hi",
+    "kyle": "👾 Kyle: Hello {{username}}, how can I help you today?",
+    "time": "2025-06-19T11:20:19.096Z"
+  },
+  {
+    "you": "bye",
+    "kyle": "Goodbye, Kyle. Come back soon!",
+    "time": "2025-06-19T11:23:02.024Z"
+  }
+]

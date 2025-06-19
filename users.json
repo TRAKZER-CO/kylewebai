@@ -21,5 +21,40 @@
     "username": "2212",
     "password": "trakzer",
     "role": "user"
+  },
+  {
+    "username": "aaron",
+    "password": "aaron",
+    "role": "user"
+  },
+  {
+    "username": "amos",
+    "password": "2212",
+    "role": "user"
+  },
+  {
+    "username": "amos22",
+    "password": "2352",
+    "role": "user"
+  },
+  {
+    "username": "brain",
+    "password": "brain",
+    "role": "user"
+  },
+  {
+    "username": "kyle",
+    "password": "kyle",
+    "role": "user"
+  },
+  {
+    "username": "dxe",
+    "password": "2352",
+    "role": "user"
+  },
+  {
+    "username": "where",
+    "password": "where",
+    "role": "user"
   }
 ]
